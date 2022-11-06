@@ -1,0 +1,22 @@
+
+name: Build
+
+on: [ push, pull_request ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+      - name: Build
+        run: ./gradlew build
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: SrvPing
+          path: "build/libs/*.jar"
