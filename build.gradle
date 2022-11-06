@@ -1,0 +1,41 @@
+plugins {
+    id 'java'
+}
+
+group 'com.jnngl'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+
+    maven { url 'https://maven.elytrium.net/repo' }
+}
+
+jar {
+    manifest {
+        attributes["Manifest-Version"] = "1.0"
+        attributes["Main-Class"] = "com.jnngl.Main"
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from { configurations.runtimeClasspath.collect { it.isDirectory()? it : zipTree(it) } }
+}
+
+dependencies {
+    implementation 'net.elytrium:elytrium-java-commons:1.0.8'
+    implementation 'net.dv8tion:JDA:5.0.0-alpha.22'
+    implementation 'com.vk.api:sdk:1.0.14'
+    implementation 'org.telegram:telegrambots:6.1.0'
+    implementation 'org.yaml:snakeyaml:1.33'
+    implementation 'org.slf4j:slf4j-jcl:1.7.36'
+    implementation 'io.netty:netty-all:4.1.84.Final'
+    implementation 'com.google.code.gson:gson:2.10'
+
+    implementation 'net.kyori:adventure-api:4.11.0'
+    implementation 'net.kyori:adventure-text-serializer-gson:4.11.0'
+    implementation 'net.kyori:adventure-text-serializer-plain:4.11.0'
+
+    implementation 'com.j256.ormlite:ormlite-jdbc:6.1'
+    implementation 'com.h2database:h2:2.1.214'
+
+    implementation 'de.erichseifert.gral:gral-core:0.11'
+}
