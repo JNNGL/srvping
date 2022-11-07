@@ -6,6 +6,7 @@ import com.jnngl.Messages;
 import com.jnngl.bot.DiscordBot;
 import com.jnngl.bot.TelegramBot;
 import com.jnngl.bot.VkBot;
+import com.jnngl.bot.VkMessageAuthor;
 import com.jnngl.ping.ServerData;
 import com.jnngl.ping.ServerPinger;
 import com.jnngl.resolver.ServerAddress;
@@ -180,17 +181,17 @@ public class PingCommand implements Command {
   }
 
   @Override
-  public void handle(VkBot vkBot, String[] args, long id) throws Exception {
+  public void handle(VkBot vkBot, String[] args, VkMessageAuthor author) throws Exception {
     handle(
         args,
         vkBot.getAliases(),
         vkBot.getLogger(),
-        vkBot.getReplyConsumer(id),
+        vkBot.getReplyConsumer(author.getChatId()),
         serverData -> {
           try {
             vkBot.getVk().messages()
                 .send(vkBot.getActor())
-                .userId((int) id)
+                .peerId((int) author.getChatId())
                 .message(toMessageContent(serverData))
                 .dontParseLinks(true)
                 .randomId(ThreadLocalRandom.current().nextInt())

@@ -8,6 +8,7 @@ import com.jnngl.ServerDatabase;
 import com.jnngl.bot.DiscordBot;
 import com.jnngl.bot.TelegramBot;
 import com.jnngl.bot.VkBot;
+import com.jnngl.bot.VkMessageAuthor;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.objects.photos.responses.GetMessagesUploadServerResponse;
@@ -219,13 +220,13 @@ public class StatsCommand implements Command {
   }
 
   @Override
-  public void handle(VkBot vkBot, String[] args, long id) throws Exception {
+  public void handle(VkBot vkBot, String[] args, VkMessageAuthor author) throws Exception {
     handle(
         args,
         vkBot.getLogger(),
         vkBot.getAliases(),
         vkBot.getScheduledPinger(),
-        vkBot.getReplyConsumer(id),
+        vkBot.getReplyConsumer(author.getChatId()),
         (content, image) -> {
           try {
             File tempFile = File.createTempFile("vk_photo", ".png");
@@ -250,7 +251,7 @@ public class StatsCommand implements Command {
 
             vkBot.getVk().messages()
                 .send(vkBot.getActor())
-                .userId((int) id)
+                .peerId((int) author.getChatId())
                 .message(content)
                 .attachment("photo" + photo.getOwnerId() + "_" + photo.getId())
                 .randomId(ThreadLocalRandom.current().nextInt())

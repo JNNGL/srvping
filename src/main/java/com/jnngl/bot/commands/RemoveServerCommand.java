@@ -7,6 +7,7 @@ import com.jnngl.ServerDatabase;
 import com.jnngl.bot.DiscordBot;
 import com.jnngl.bot.TelegramBot;
 import com.jnngl.bot.VkBot;
+import com.jnngl.bot.VkMessageAuthor;
 import net.dv8tion.jda.api.entities.Message;
 import net.elytrium.java.commons.config.Placeholders;
 
@@ -58,13 +59,13 @@ public class RemoveServerCommand implements Command {
   }
 
   @Override
-  public void handle(VkBot vkBot, String[] args, long id) throws Exception {
+  public void handle(VkBot vkBot, String[] args, VkMessageAuthor author) throws Exception {
     handle(
         args,
         vkBot.getScheduledPinger(),
         vkBot.getAliases(),
-        String.valueOf(id),
-        vkBot.getReplyConsumer(id)
+        String.valueOf(author.getAuthorId()),
+        vkBot.getReplyConsumer(author.getChatId())
     );
   }
 

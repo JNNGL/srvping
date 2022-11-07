@@ -7,6 +7,7 @@ import com.jnngl.ServerDatabase;
 import com.jnngl.bot.DiscordBot;
 import com.jnngl.bot.TelegramBot;
 import com.jnngl.bot.VkBot;
+import com.jnngl.bot.VkMessageAuthor;
 import com.jnngl.ping.ServerPinger;
 import com.jnngl.resolver.ServerAddress;
 import com.jnngl.resolver.ServerNameResolver;
@@ -73,14 +74,14 @@ public class AddServerCommand implements Command {
   }
 
   @Override
-  public void handle(VkBot vkBot, String[] args, long id) throws Exception {
+  public void handle(VkBot vkBot, String[] args, VkMessageAuthor author) throws Exception {
     handle(
         args,
-        String.valueOf(id),
+        String.valueOf(author.getAuthorId()),
         vkBot.getLogger(),
         vkBot.getScheduledPinger(),
         vkBot.getAliases(),
-        vkBot.getReplyConsumer(id)
+        vkBot.getReplyConsumer(author.getChatId())
     );
   }
 

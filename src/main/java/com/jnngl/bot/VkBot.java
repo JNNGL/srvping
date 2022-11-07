@@ -80,7 +80,12 @@ public class VkBot {
                       if (message.has("text")) {
                         String text = message.get("text").getAsString();
                         long id = message.get("from_id").getAsLong();
-                        processMessage(text, id);
+                        long peer = id;
+                        if (message.has("peer_id")) {
+                          peer = message.get("peer_id").getAsLong();
+                        }
+
+                        processMessage(text, new VkMessageAuthor(id, peer));
                       }
                     }
                   }
@@ -105,13 +110,13 @@ public class VkBot {
     return mapping;
   }
 
-  private void processMessage(String content, long id) {
-    BotUtils.processMessage(VkBot.class, this, long.class, id, executor, content, commandPrefix, mapping,
+  private void processMessage(String content, VkMessageAuthor author) {
+    BotUtils.processMessage(VkBot.class, this, VkMessageAuthor.class, author, executor, content, commandPrefix, mapping,
         exception -> {
           try {
             vk.messages()
                 .send(actor)
-                .userId((int) id)
+                .peerId((int) author.getChatId())
                 .message(exception.getClass().getName() + ": " + exception.getMessage())
                 .randomId(ThreadLocalRandom.current().nextInt())
                 .execute();
@@ -126,7 +131,7 @@ public class VkBot {
       try {
         vk.messages()
             .send(actor)
-            .userId((int) id)
+            .peerId((int) id)
             .message(content)
             .randomId(ThreadLocalRandom.current().nextInt())
             .execute();

@@ -5,6 +5,7 @@ import com.jnngl.ScheduledPinger;
 import com.jnngl.bot.DiscordBot;
 import com.jnngl.bot.TelegramBot;
 import com.jnngl.bot.VkBot;
+import com.jnngl.bot.VkMessageAuthor;
 import com.vk.api.sdk.exceptions.ApiException;
 import com.vk.api.sdk.exceptions.ClientException;
 import net.dv8tion.jda.api.entities.Message;
@@ -30,14 +31,14 @@ public class ServersCommand implements Command {
   }
 
   @Override
-  public void handle(VkBot vkBot, String[] args, long id) throws Exception {
+  public void handle(VkBot vkBot, String[] args, VkMessageAuthor author) throws Exception {
     handle(
         vkBot.getScheduledPinger(),
         content -> {
           try {
             vkBot.getVk().messages()
                 .send(vkBot.getActor())
-                .userId((int) id)
+                .peerId((int) author.getChatId())
                 .message(content)
                 .randomId(ThreadLocalRandom.current().nextInt())
                 .execute();
