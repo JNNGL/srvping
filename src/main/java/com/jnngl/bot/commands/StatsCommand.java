@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -101,12 +102,19 @@ public class StatsCommand implements Command {
     SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
     Map<Double, String> ticks = new HashMap<>();
 
+    int hours = 24; // TODO: Add argument
+
     double i = 0;
     long step = Math.max(60, Config.IMP.PING_PERIOD) * 1000L;
-    for (long timestamp = time - 1000 * 60 * 60 * 12; timestamp <= time; timestamp += step) {
+    for (long timestamp = time - 1000 * 60 * 60 * hours; timestamp <= time; timestamp += step) {
 
-      String format = dateFormat.format(new Date(timestamp));
-      if (format.endsWith("00")) {
+      Date date = new Date(timestamp);
+      String format = dateFormat.format(date);
+
+      Calendar calendar = Calendar.getInstance();
+      calendar.setTime(date);
+
+      if (format.endsWith("00") && calendar.get(Calendar.HOUR_OF_DAY) % (hours / 12) == 0) {
         ticks.put(i, format);
       } else {
         ticks.put(i, "");
