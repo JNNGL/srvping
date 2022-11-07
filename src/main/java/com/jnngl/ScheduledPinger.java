@@ -50,12 +50,17 @@ public class ScheduledPinger {
               ip -> ServerNameResolver.DEFAULT.resolveAddress(ServerAddress.fromString(ip)).orElseThrow());
 
           try {
-            try {
-              ServerData serverData = ServerPinger.pingServer(address, target.getProtocol());
-              database.addServerEntry(
-                  new ServerDatabase.ServerOnlineEntry(target.getIp(), timestamp, serverData.players.online));
-            } catch (Exception e) {
-              database.addServerEntry(new ServerDatabase.ServerOnlineEntry(target.getIp(), timestamp, 0));
+            for (int i = 0; i < 2; i++) {
+              try {
+                ServerData serverData = ServerPinger.pingServer(address, target.getProtocol());
+                database.addServerEntry(
+                    new ServerDatabase.ServerOnlineEntry(target.getIp(), timestamp, serverData.players.online));
+                break;
+              } catch (Exception ignored) {
+                if (i == 1) {
+                  database.addServerEntry(new ServerDatabase.ServerOnlineEntry(target.getIp(), timestamp, 0));
+                }
+              }
             }
           } catch (SQLException ex) {
             throw new RuntimeException(ex);
