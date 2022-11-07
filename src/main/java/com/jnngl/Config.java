@@ -26,7 +26,7 @@ public class Config extends YamlConfig {
   public String STATUS = "online";
   public String DB_FILE = "servers";
   public int CHART_WIDTH = 800;
-  public int CHART_HEIGHT = 600;
+  public int CHART_HEIGHT = 650;
   public String CUSTOM_FONT = "";
   public Map<String, String> COMMAND_MAPPING = new HashMap<>();
 

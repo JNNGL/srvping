@@ -96,8 +96,17 @@ public class Messages extends YamlConfig {
     @Placeholders("server")
     public String SERVER_NOT_ADDED = "Сервер '{SERVER}' не находится в списке отслеживаемых серверов";
 
-    @Placeholders("server")
-    public String CHART_TITLE = "График онлайна сервера '{SERVER}'";
+    @Comment({
+        "Плейсхолдеры:",
+        " - {SERVER}: Айпи сервера",
+        " - {ONLINE}: Текущий онлайн сервера",
+        " - {MAX_ONLINE}: Максимальный онлайн на графике",
+        " - {MIN_ONLINE}: Минимальный онлайн на графике",
+        " - {ONLINE_YESTERDAY}: Онлайн вчера в это же время",
+        " - {PEAK_ONLINE}: Пик онлайна все время"
+    })
+    @Placeholders({"server", "online", "max-online", "min-online", "online-yesterday", "peak-online"})
+    public String CHART_TITLE = "График онлайна сервера '{SERVER}'{NL}Онлайн: {ONLINE}{NL}Макс. онлайн на графике: {MAX_ONLINE}{NL}Мин. онлайн на графике: {MIN_ONLINE}{NL}Онлайн вчера: {ONLINE_YESTERDAY}{NL}Пик онлайна: {PEAK_ONLINE}";
 
     public String ONLINE = "Онлайн";
   }

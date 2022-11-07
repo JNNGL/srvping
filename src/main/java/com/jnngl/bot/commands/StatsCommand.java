@@ -104,6 +104,24 @@ public class StatsCommand implements Command {
 
     int hours = 24; // TODO: Add argument
 
+    int currentOnline = 0;
+    int maxOnline = 0;
+    int minOnline = Integer.MAX_VALUE;
+    int peakOnline = 0;
+    int onlineYesterday = -1;
+
+    Date yesterday = new Date(time - 1000 * 60 * 60 * 24);
+    for (ServerDatabase.ServerOnlineEntry entry : onlineEntries) {
+      peakOnline = Math.max(peakOnline, entry.getOnline());
+
+      if (onlineYesterday == -1) {
+        Date date = new Date(entry.getTimestamp());
+        if (dateFormat.format(yesterday).equals(dateFormat.format(date))) {
+          onlineYesterday = entry.getOnline();
+        }
+      }
+    }
+
     double i = 0;
     long step = Math.max(60, Config.IMP.PING_PERIOD) * 1000L;
     for (long timestamp = time - 1000 * 60 * 60 * hours; timestamp <= time; timestamp += step) {
@@ -134,6 +152,9 @@ public class StatsCommand implements Command {
 
       if (onlineEntry != null) {
         dataTable.add(i, onlineEntry.getOnline());
+        currentOnline = onlineEntry.getOnline();
+        maxOnline = Math.max(maxOnline, onlineEntry.getOnline());
+        minOnline = Math.min(minOnline, onlineEntry.getOnline());
       }
 
       i++;
@@ -144,13 +165,27 @@ public class StatsCommand implements Command {
       return;
     }
 
+    if (minOnline == Integer.MAX_VALUE) {
+      minOnline = 0;
+    }
+
     DataSeries dataSeries = new DataSeries(Messages.IMP.STATS.ONLINE, dataTable, 0, 1);
     XYPlot plot = new XYPlot(dataSeries);
     plot.setBackground(Color.WHITE);
     plot.setLegendVisible(true);
     plot.setInsets(new Insets2D.Double(20, 80, 40, 20));
     plot.setBounds(new Rectangle(0, 0, Config.IMP.CHART_WIDTH, Config.IMP.CHART_HEIGHT));
-    plot.getTitle().setText(Placeholders.replace(Messages.IMP.STATS.CHART_TITLE, args[0]));
+    plot.getTitle().setText(
+        Placeholders.replace(
+            Messages.IMP.STATS.CHART_TITLE,
+            args[0],
+            currentOnline,
+            maxOnline,
+            minOnline,
+            onlineYesterday,
+            peakOnline
+        )
+    );
 
     PointRenderer pointRenderer = new DefaultPointRenderer2D();
     pointRenderer.setShape(null);
