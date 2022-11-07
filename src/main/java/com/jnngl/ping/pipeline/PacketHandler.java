@@ -57,4 +57,9 @@ public class PacketHandler extends ChannelDuplexHandler {
   public ServerData getServerData() {
     return serverData;
   }
+
+  @Override
+  public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+    ctx.close();
+  }
 }
