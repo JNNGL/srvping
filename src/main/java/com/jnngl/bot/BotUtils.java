@@ -38,6 +38,7 @@ public class BotUtils {
                 throw new RuntimeException(ex);
               } catch (InvocationTargetException ex) {
                 Throwable actual = ex.getCause();
+                actual.printStackTrace();
                 exceptionHandler.accept(actual);
               }
             });

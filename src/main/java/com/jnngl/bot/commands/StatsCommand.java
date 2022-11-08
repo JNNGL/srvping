@@ -57,6 +57,8 @@ import java.util.function.Consumer;
 
 public class StatsCommand implements Command {
 
+  private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm");
+
   private static final Font CUSTOM_FONT;
   static {
     if (Config.IMP.CUSTOM_FONT.isBlank()) {
@@ -87,8 +89,6 @@ public class StatsCommand implements Command {
       return;
     }
 
-    logger.info("Creating stats chart for {}", args[0]);
-
     List<ServerDatabase.ServerOnlineEntry> onlineEntries = scheduledPinger.getDatabase().queryServerEntries(args[0]);
 
     long time = System.currentTimeMillis();
@@ -99,7 +99,6 @@ public class StatsCommand implements Command {
     @SuppressWarnings("unchecked")
     DataTable dataTable = new DataTable(Double.class, Integer.class);
 
-    SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
     Map<Double, String> ticks = new HashMap<>();
 
     int hours = 24; // TODO: Add argument
@@ -116,7 +115,7 @@ public class StatsCommand implements Command {
 
       if (onlineYesterday == -1) {
         Date date = new Date(entry.getTimestamp());
-        if (dateFormat.format(yesterday).equals(dateFormat.format(date))) {
+        if (DATE_FORMAT.format(yesterday).equals(DATE_FORMAT.format(date))) {
           onlineYesterday = entry.getOnline();
         }
       }
@@ -127,7 +126,7 @@ public class StatsCommand implements Command {
     for (long timestamp = time - 1000 * 60 * 60 * hours; timestamp <= time; timestamp += step) {
 
       Date date = new Date(timestamp);
-      String format = dateFormat.format(date);
+      String format = DATE_FORMAT.format(date);
 
       Calendar calendar = Calendar.getInstance();
       calendar.setTime(date);
@@ -144,7 +143,7 @@ public class StatsCommand implements Command {
           continue;
         }
 
-        if (format.equals(dateFormat.format(new Date(entry.getTimestamp())))) {
+        if (format.equals(DATE_FORMAT.format(new Date(entry.getTimestamp())))) {
           onlineEntry = entry;
           break;
         }
@@ -234,6 +233,8 @@ public class StatsCommand implements Command {
     plot.draw(drawingContext);
 
     graphics.dispose();
+
+    logger.info("Generated stats chart for {} in {}ms", args[0], System.currentTimeMillis() - time);
 
     replyImage.accept("", bufferedImage);
   }

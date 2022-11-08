@@ -96,7 +96,7 @@ public class VkBot {
         } catch (LongPollServerKeyExpiredException ignored) {
 
         } catch (ApiException | ClientException e) {
-          throw new RuntimeException(e);
+          e.printStackTrace();
         }
       }
     });
