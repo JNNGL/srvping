@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class Main {
@@ -19,10 +20,11 @@ public class Main {
 
     ServerDatabase database = new ServerDatabase(new File(Config.IMP.DB_FILE));
 
+    ThreadPoolExecutor pingExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
     ScheduledThreadPoolExecutor executor = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(
         Runtime.getRuntime().availableProcessors());
 
-    ScheduledPinger scheduledPinger = new ScheduledPinger(database, executor);
+    ScheduledPinger scheduledPinger = new ScheduledPinger(database, executor, pingExecutor);
     scheduledPinger.start(Config.IMP.PING_PERIOD, TimeUnit.SECONDS);
 
     Aliases aliases = new Aliases(database);

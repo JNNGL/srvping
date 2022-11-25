@@ -11,6 +11,7 @@ import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.timeout.ReadTimeoutHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.InetSocketAddress;
@@ -42,6 +43,7 @@ public class ServerPinger {
         ch.config().setOption(ChannelOption.TCP_NODELAY, true);
         ch.config().setOption(ChannelOption.TCP_FASTOPEN_CONNECT, true);
 
+        ch.pipeline().addFirst(new ReadTimeoutHandler(5));
         ch.pipeline().addLast("splitter", new PacketSplitter());
         ch.pipeline().addLast("decoder", new PacketDecoder(protocol));
         ch.pipeline().addLast("handler", packetHandler);

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class ScheduledPinger {
@@ -22,12 +23,15 @@ public class ScheduledPinger {
 
   private final ServerDatabase database;
   private final ScheduledThreadPoolExecutor executor;
+  private final ThreadPoolExecutor pingExecutor;
   private final Logger logger;
   private ScheduledFuture<?> scheduledFuture;
 
-  public ScheduledPinger(ServerDatabase database, ScheduledThreadPoolExecutor executor) throws SQLException {
+  public ScheduledPinger(ServerDatabase database, ScheduledThreadPoolExecutor executor, ThreadPoolExecutor pingExecutor)
+      throws SQLException {
     this.database = database;
     this.executor = executor;
+    this.pingExecutor = pingExecutor;
     this.logger = LoggerFactory.getLogger("ScheduledPinger");
 
     logger.info("{} target servers", this.database.queryServerTargets().size());
@@ -45,7 +49,7 @@ public class ScheduledPinger {
         List< ServerDatabase.ServerTargetEntry> targets =
             database.queryServerTargets();
         logger.info("Pinging {} servers", targets.size());
-        targets.forEach(target -> executor.execute(() -> {
+        targets.forEach(target -> pingExecutor.execute(() -> {
           InetSocketAddress address = ADDRESS_CACHE.computeIfAbsent(target.getIp(),
               ip -> ServerNameResolver.DEFAULT.resolveAddress(ServerAddress.fromString(ip)).orElseThrow());
 
